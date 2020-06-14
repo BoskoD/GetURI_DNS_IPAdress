@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Net;
-
+using System.Net.NetworkInformation;
 
 namespace GetURI_DNS_IPAdress
 {
@@ -33,11 +33,30 @@ namespace GetURI_DNS_IPAdress
                 {
                     Console.WriteLine($"{address}");
                 }
+
+                var ping = new Ping();
+                PingReply reply = ping.Send(uri.Host);
+                Console.WriteLine($"{uri.Host} was pinged, and replied: {reply.Status}.");
+
+                if (reply.Status == IPStatus.Success)
+                {
+                    Console.WriteLine($"Reply from {reply.Address} took {reply.RoundtripTime:N0}ms");
+                }
+                else if (reply.Status == IPStatus.TimedOut)
+                {
+                    Console.WriteLine($"Reply from {reply.Address} timed out after {reply.RoundtripTime:N0}ms");
+                }
+                else if (reply.Status == IPStatus.Unknown)
+                {
+                    Console.WriteLine($"Reply from {reply.Address} UNKNOWN!");
+                }
             }
             catch (Exception e)
             {
                 Console.WriteLine(e.Message);
             }
+
+            
         }
     }
 }
